@@ -168,7 +168,7 @@ class MoveSftp(BaseWorkerCustomer):
         self.logger.debug("start get_total() dirs = %s , files = %s" % (count_dirs, count_files))
         for path in paths:
             try:
-                sftp = SFTPConnection.create(self.login, self.session.get('server_id'), self.logger)
+                sftp = SFTPConnection.create(self.login, self.source.get('server_id'), self.logger)
                 abs_path = path
 
                 if count_dirs:

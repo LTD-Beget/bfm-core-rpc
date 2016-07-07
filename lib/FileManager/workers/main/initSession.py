@@ -87,7 +87,7 @@ class InitSession(BaseWorkerCustomer):
 
             return actions
 
-        if self.session_type == Module.PUBLIC_FTP:
+        if self.session_type == Module.FTP:
             self.logger.info("FTP Actions preload")
             actions = {
                 Action.ANALYZE_SIZE: False,
@@ -192,7 +192,7 @@ class InitSession(BaseWorkerCustomer):
 
             return result
 
-        if self.session_type == Module.PUBLIC_FTP:
+        if self.session_type == Module.FTP:
             self.logger.info("FTP Listing preload")
             path = self.path if self.path is not None else '/'
             abs_path = os.path.abspath(path)
