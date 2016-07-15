@@ -155,7 +155,7 @@ class FtpController(Controller):
 
     @staticmethod
     def run_subprocess(logger, worker_object, status_id, name, params):
-        logger.info("FM call FTP long action %s %s %s" % ( name, pprint.pformat(status_id), pprint.pformat(params.get("login"))))
+        logger.info("FM call FTP long action %s %s %s" % (name, pprint.pformat(status_id), pprint.pformat(params.get("login"))))
 
         def async_check_operation(op_status_id):
             operation = OperationStatus.load(op_status_id)

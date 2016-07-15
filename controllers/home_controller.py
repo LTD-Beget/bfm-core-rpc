@@ -32,7 +32,7 @@ import traceback
 from lib.FileManager.OperationStatus import OperationStatus
 
 
-class LocalController(Controller):
+class HomeController(Controller):
     def action_list_files(self, login, password, path):
 
         return self.get_process_data(ListFiles, {

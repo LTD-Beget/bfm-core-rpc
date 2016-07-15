@@ -13,12 +13,11 @@ class InitSession(BaseWorkerCustomer):
 
         self.path = path
         self.session = session
-        self.session_type = self.session.get("type", None)
+        self.session_type = self.session["type"]
 
     def run(self):
         try:
             self.preload()
-            self.logger.info("After preload")
             result = {
                 "data": {
                     "actions": self.get_allowed_actions(),
@@ -196,7 +195,7 @@ class InitSession(BaseWorkerCustomer):
             self.logger.info("FTP Listing preload")
             path = self.path if self.path is not None else '/'
             abs_path = os.path.abspath(path)
-            ftp_connection = FTPConnection.create(self.login, self.session.get('server_id'), self.logger)
+            ftp_connection = self.get_ftp_connection(self.session)
             listing = ftp_connection.list(path=abs_path)
 
             return listing
@@ -204,7 +203,7 @@ class InitSession(BaseWorkerCustomer):
         if self.session_type == Module.SFTP:
             self.logger.info("SFTP Listing preload")
             path = self.path if self.path is not None else '.'
-            sftp_connection = SFTPConnection.create(self.login, self.session.get('server_id'), self.logger)
+            sftp_connection = self.get_ftp_connection(self.session)
             listing = sftp_connection.list(path=path)
 
             return listing
