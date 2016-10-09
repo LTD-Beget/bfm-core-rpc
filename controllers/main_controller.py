@@ -8,6 +8,7 @@ from lib.FileManager.workers.main.initSession import InitSession
 from lib.FileManager.workers.main.initCallback import InitCallback
 from lib.FileManager.workers.main.cancelOperation import CancelOperation
 from lib.FileManager.workers.main.Authenticate import Authenticate
+from lib.FileManager.workers.main.openTerminal import OpenTerminal
 from lib.FileManager.OperationStatus import OperationStatus
 from misc.helpers import byte_to_unicode_dict
 
@@ -54,6 +55,13 @@ class MainController(Controller):
         return self.get_process_data(InitCallback, {
             "login": login.decode('UTF-8'),
             "password": password.decode('UTF-8')
+        })
+
+    def action_open_terminal(self, login, password, session):
+        return self.get_process_data(OpenTerminal, {
+            "login": login.decode('UTF-8'),
+            "password": password.decode('UTF-8'),
+            "session": byte_to_unicode_dict(session)
         })
 
     def get_process_data(self, process_object, process_kwargs):
