@@ -18,9 +18,10 @@ class OpenTerminal(BaseWorkerCustomer):
         try:
             self.preload()
             self.logger.debug("session=%s" % self.session)
-            login = self.login
+
             if self.session["type"] == "home":
                 server = self.session["host"]
+                login = self.login
 
             else:
                 table_name = ""
@@ -36,6 +37,7 @@ class OpenTerminal(BaseWorkerCustomer):
                 cursor.execute("SELECT * FROM {} WHERE fm_login = ? AND id = ?".format(table_name), (self.login, self.session["server_id"]))
                 server_description = cursor.fetchone()
                 server = server_description[2]
+                login = server_description[4]
 
             self.logger.debug("server=%s" % server)
 
