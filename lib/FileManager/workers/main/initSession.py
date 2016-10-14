@@ -83,7 +83,7 @@ class InitSession(BaseWorkerCustomer):
                 Action.UP: True,
                 Action.UPLOAD: True,
                 Action.VIEW: True,
-                # Action.TERMINAL: True,
+                Action.TERMINAL: True,
             }
 
             return actions
