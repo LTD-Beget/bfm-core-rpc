@@ -1,6 +1,4 @@
 from lib.FileManager.workers.baseWorkerCustomer import BaseWorkerCustomer
-from lib.FileManager.SFTPConnection import SFTPConnection
-from lib.FileManager.FTPConnection import FTPConnection
 from lib.FileManager.FM import REQUEST_DELAY
 from lib.FileManager.workers.progress_helper import update_progress
 import os
@@ -21,7 +19,7 @@ class CopyFromSftpToFtp(BaseWorkerCustomer):
     def run(self):
         try:
             self.preload()
-            sftp = Sself.get_ftp_connection(self.source)
+            sftp = self.get_sftp_connection(self.source)
 
             success_paths = []
             error_paths = []
@@ -159,7 +157,7 @@ class CopyFromSftpToFtp(BaseWorkerCustomer):
 
         for path in paths:
             try:
-                sftp = Sself.get_ftp_connection(self.source)
+                sftp = self.get_sftp_connection(self.source)
                 abs_path = path
 
                 if count_dirs:

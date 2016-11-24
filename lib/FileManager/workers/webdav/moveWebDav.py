@@ -1,26 +1,24 @@
 from lib.FileManager.workers.baseWorkerCustomer import BaseWorkerCustomer
-from lib.FileManager.FM import REQUEST_DELAY
+from lib.FileManager.WebDavConnection import WebDavConnection
 from lib.FileManager.workers.progress_helper import update_progress
-
+from lib.FileManager.FM import REQUEST_DELAY
 import traceback
 import threading
 import time
 
 
-class CopyFromSftp(BaseWorkerCustomer):
+class MoveWebDav(BaseWorkerCustomer):
     def __init__(self, source, target, paths, overwrite, *args, **kwargs):
-        super(CopyFromSftp, self).__init__(*args, **kwargs)
+        super(MoveWebDav, self).__init__(*args, **kwargs)
 
         self.source = source
         self.target = target
         self.paths = paths
         self.overwrite = overwrite
-        self.session = source
 
     def run(self):
         try:
             self.preload()
-            sftp = self.get_sftp_connection(self.session)
             success_paths = []
             error_paths = []
 
@@ -32,27 +30,47 @@ class CopyFromSftp(BaseWorkerCustomer):
             }
 
             source_path = self.source.get('path')
-            target_path = self.get_abs_path(self.target.get('path'))
+            target_directory = self.target.get('path')
 
             if source_path is None:
                 raise Exception("Source path empty")
 
-            if target_path is None:
+            if target_directory is None:
                 raise Exception("Target path empty")
 
-            self.logger.info("CopyFromSftp process run source = %s , target = %s" % (source_path, target_path))
+            self.logger.info("MoveWebDav process run source = %s , target = %s" % (source_path, target_directory))
 
+            webdav = WebDavConnection.create(self.login, self.target.get('server_id'), self.logger)
             t_total = threading.Thread(target=self.get_total, args=(operation_progress, self.paths))
             t_total.start()
+
+            # sleep for a while for better total counting
+            time.sleep(REQUEST_DELAY)
 
             t_progress = threading.Thread(target=update_progress, args=(operation_progress,))
             t_progress.start()
 
             for path in self.paths:
                 try:
-                    sftp.rsync_from(path, target_path,
-                                    overwrite=self.overwrite, progress=operation_progress)
+                    replaced_path = path
+                    if source_path != '/':
+                        replaced_path = path.replace(webdav.parent(path), "/", 1)
+                    if target_directory != '/':
+                        target_path = target_directory + replaced_path
+                    else:
+                        target_path = replaced_path
+                    
+                    if webdav.isdir(path):
+                        path += '/'
+
+                    copy_result = webdav.move_file(path, webdav.path(target_path), overwrite=True)
+                    if not copy_result['success'] or len(copy_result['file_list']['failed']) > 0:
+                        raise copy_result['error'] if copy_result['error'] is not None else Exception(
+                            "Upload error")
+                    operation_progress["processed"] += 1
+
                     success_paths.append(path)
+
                 except Exception as e:
                     self.logger.error(
                         "Error copy %s , error %s , %s" % (str(path), str(e), traceback.format_exc()))
@@ -83,19 +101,18 @@ class CopyFromSftp(BaseWorkerCustomer):
             self.on_error(self.status_id, result, pid=self.pid, pname=self.name)
 
     def get_total(self, progress_object, paths, count_dirs=True, count_files=True):
-
         self.logger.debug("start get_total() dirs = %s , files = %s" % (count_dirs, count_files))
+        webdav = WebDavConnection.create(self.login, self.target.get('server_id'), self.logger)
         for path in paths:
             try:
-                sftp = self.get_sftp_connection(self.session)
                 if count_dirs:
                     progress_object["total"] += 1
 
-                for current, dirs, files in sftp.walk(path):
-                    if count_dirs:
-                        progress_object["total"] += len(dirs)
-                    if count_files:
-                        progress_object["total"] += len(files)
+                for file in webdav.listdir(path):
+                    if webdav.isdir(file):
+                        progress_object["total"] += 1
+                    else:
+                        progress_object["total"] += 1
             except Exception as e:
                 self.logger.error("Error get_total file %s , error %s" % (str(path), str(e)))
                 continue
@@ -103,3 +120,4 @@ class CopyFromSftp(BaseWorkerCustomer):
         progress_object["total_done"] = True
         self.logger.debug("done get_total()")
         return
+

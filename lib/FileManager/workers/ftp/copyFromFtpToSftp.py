@@ -1,6 +1,4 @@
 from lib.FileManager.workers.baseWorkerCustomer import BaseWorkerCustomer
-from lib.FileManager.SFTPConnection import SFTPConnection
-from lib.FileManager.FTPConnection import FTPConnection
 from lib.FileManager.FM import REQUEST_DELAY
 from lib.FileManager.workers.progress_helper import update_progress
 import os
@@ -43,7 +41,7 @@ class CopyFromFtpToSftp(BaseWorkerCustomer):
             self.logger.info("CopyFromFtp process run source = %s , target = %s" % (source_path, target_path))
 
             source_ftp = self.get_ftp_connection(self.source)
-            target_sftp = Sself.get_ftp_connection(self.target)
+            target_sftp = self.get_ftp_connection(self.target)
             t_total = threading.Thread(target=self.get_total, args=(operation_progress, self.paths))
             t_total.start()
 
@@ -157,7 +155,7 @@ class CopyFromFtpToSftp(BaseWorkerCustomer):
 
     def get_total(self, progress_object, paths, count_dirs=True, count_files=True):
         self.logger.debug("start get_total() dirs = %s , files = %s" % (count_dirs, count_files))
-        source_sftp = Sself.get_ftp_connection(self.source)
+        source_sftp = self.get_ftp_connection(self.source)
         for path in paths:
             try:
                 abs_path = path
