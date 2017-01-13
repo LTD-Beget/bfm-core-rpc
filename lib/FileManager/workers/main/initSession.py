@@ -82,7 +82,8 @@ class InitSession(BaseWorkerCustomer):
                 Action.SITE_LIST: False,
                 Action.UP: True,
                 Action.UPLOAD: True,
-                Action.VIEW: True
+                Action.VIEW: True,
+                Action.TERMINAL: True,
             }
 
             return actions
@@ -126,7 +127,8 @@ class InitSession(BaseWorkerCustomer):
                 Action.SITE_LIST: False,
                 Action.UP: True,
                 Action.UPLOAD: True,
-                Action.VIEW: True
+                Action.VIEW: True,
+                # Action.TERMINAL: True
             }
 
             return actions
@@ -170,7 +172,8 @@ class InitSession(BaseWorkerCustomer):
                 Action.SITE_LIST: False,
                 Action.UP: True,
                 Action.UPLOAD: True,
-                Action.VIEW: True
+                Action.VIEW: True,
+                # Action.TERMINAL: True
             }
 
             return actions
@@ -215,7 +218,8 @@ class InitSession(BaseWorkerCustomer):
                 Action.SITE_LIST: False,
                 Action.UP: True,
                 Action.UPLOAD: True,
-                Action.VIEW: True
+                Action.VIEW: True,
+                Action.TERMINAL: True
                 }
 
             return actions

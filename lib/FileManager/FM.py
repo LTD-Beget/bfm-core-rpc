@@ -85,6 +85,8 @@ class Action(object):
     HELP = 'FM.action.Help'
     LOGOUT = 'FM.action.Logout'
 
+    TERMINAL = 'FM.action.Terminal'
+
 
 # Aliases for FM modules
 class Module(object):
