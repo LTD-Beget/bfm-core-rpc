@@ -41,7 +41,7 @@ class AnalyzeSize(BaseWorkerCustomer):
                 du_regex = re.compile('^([0-9]+)\s+(.*)$', re.UNICODE | re.IGNORECASE)
 
                 p = SubprocessRunner(command=command, logger=self.logger, stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE)
+                                     stderr=subprocess.DEVNULL)
 
                 for line in p.iterate():
                     try:
