@@ -1,7 +1,7 @@
 import os
 import threading
 import traceback
-
+from pathlib import Path
 from lib.FileManager.workers.baseWorkerCustomer import BaseWorkerCustomer
 
 
@@ -15,8 +15,10 @@ class ListFiles(BaseWorkerCustomer):
         try:
             self.preload()
             abs_path = self.get_abs_path(self.path)
-            self.logger.debug("FM ListFiles worker run(), abs_path = %s" % abs_path)
-
+            path = Path(abs_path)
+            if path.owner() != self.login:
+                self.logger.debug("Error occured while trying to access the directory %s by user %s" % (abs_path, self.login))
+                raise Exception("You don't have permissions to read this directory")
             items = []
             self.__list_recursive(abs_path, items, 1)
             info = self._make_file_info(abs_path)
