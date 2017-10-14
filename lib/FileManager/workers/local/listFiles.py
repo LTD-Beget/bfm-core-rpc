@@ -11,20 +11,14 @@ class ListFiles(BaseWorkerCustomer):
 
         self.path = path
 
-     def run(self):
+    def run(self):
         try:
             self.preload()
             abs_path = self.get_abs_path(self.path)
-            # Check if current user is owner of this path or not
             path = Path(abs_path)
-            # if not abs_path.startswith('/home/%s' % self.login):
-            #    self.logger.debug("Error occured while trying to access the directory %s by user %s" % (abs_path, self.login))
-            #    raise Exception("You don't have permissions to read this directory")
             if path.owner() != self.login:
                 self.logger.debug("Error occured while trying to access the directory %s by user %s" % (abs_path, self.login))
                 raise Exception("You don't have permissions to read this directory")
-            self.logger.debug("FM ListFiles worker run(), abs_path = %s" % abs_path)
-
             items = []
             self.__list_recursive(abs_path, items, 1)
             info = self._make_file_info(abs_path)
